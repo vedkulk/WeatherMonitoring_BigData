@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Weather Data Pipeline",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/weather_data_pipeline.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Weather Dashboard",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/weather_dashboard.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}

@@ -24,8 +24,13 @@ app.layout = html.Div([
         value='Mumbai',
         multi=False
     ),
+    html.H4("Temperature"),
     dcc.Graph(id='temperature-graph'),
+
+    html.H4("Humidity"),
     dcc.Graph(id='humidity-graph'),
+
+    html.H4("Wind Speed"),
     dcc.Graph(id='wind-speed-graph'),
     dcc.Interval(
         id='interval-component',
@@ -42,67 +47,45 @@ app.layout = html.Div([
      Input('interval-component', 'n_intervals')]
 )
 def update_graphs(selected_city, n):
-    # Connect to Cassandra and fetch data
     cluster = Cluster([CASSANDRA_HOST])
     session = cluster.connect(KEYSPACE)
     
-    # Fetch data for the last 24 hours
     end_time = datetime.now()
     start_time = end_time - timedelta(hours=24)
     
     query = f"SELECT * FROM {TABLE} WHERE city = %s AND timestamp >= %s AND timestamp <= %s ALLOW FILTERING"
     rows = session.execute(query, (selected_city, start_time, end_time))
     
+    if not rows:
+        return {}, {}, {}
+
     df = pd.DataFrame(rows)
     df['timestamp'] = pd.to_datetime(df['timestamp'])
     df = df.sort_values('timestamp')
-    
-    # Create traces
     temp_trace = go.Scatter(
         x=df['timestamp'],
         y=df['temperature'],
-        name='Temperature',
-        mode='lines+markers'
+        mode='lines+markers',
+        name='Temperature'
     )
-    
     humidity_trace = go.Scatter(
         x=df['timestamp'],
         y=df['humidity'],
-        name='Humidity',
-        mode='lines+markers'
+        mode='lines+markers',
+        name='Humidity'
     )
-    
-    wind_trace = go.Scatter(
+    wind_speed_trace = go.Scatter(
         x=df['timestamp'],
         y=df['wind_speed'],
-        name='Wind Speed',
-        mode='lines+markers'
-    )
-
-    # Create layouts
-    temp_layout = go.Layout(
-        title=f'Temperature in {selected_city}',
-        xaxis=dict(title='Time'),
-        yaxis=dict(title='Temperature (°C)')
+        mode='lines+markers',
+        name='Wind Speed'
     )
     
-    humidity_layout = go.Layout(
-        title=f'Humidity in {selected_city}',
-        xaxis=dict(title='Time'),
-        yaxis=dict(title='Humidity (%)')
-    )
+    temperature_fig = go.Figure(data=[temp_trace])
+    humidity_fig = go.Figure(data=[humidity_trace])
+    wind_speed_fig = go.Figure(data=[wind_speed_trace])
     
-    wind_layout = go.Layout(
-        title=f'Wind Speed in {selected_city}',
-        xaxis=dict(title='Time'),
-        yaxis=dict(title='Wind Speed (m/s)')
-    )
-
-    return (
-        {'data': [temp_trace], 'layout': temp_layout},
-        {'data': [humidity_trace], 'layout': humidity_layout},
-        {'data': [wind_trace], 'layout': wind_layout}
-    )
+    return temperature_fig, humidity_fig, wind_speed_fig
 
 if __name__ == '__main__':
     app.run_server(debug=True)
