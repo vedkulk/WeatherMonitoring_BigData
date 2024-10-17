@@ -9,7 +9,7 @@ load_dotenv()
 
 # OpenWeatherMap API configuration
 API_KEY = os.getenv("OPENWEATHERMAP_API_KEY")
-CITIES = ['London', 'New York', 'Tokyo', 'Sydney', 'Paris']
+CITIES = ['London', 'Bengaluru', 'New York', 'Tokyo', 'Sydney', 'Paris', 'Chennai']
 BASE_URL = 'http://api.openweathermap.org/data/2.5/weather'
 
 # Kafka Producer
@@ -42,4 +42,4 @@ while True:
         if weather_data:
             print(f"Sending data: {weather_data}")
             producer.send('weather-data', value=weather_data)
-    time.sleep(60)  # Fetch data every minute
+    time.sleep(10)  # Fetch data every 10 seconds

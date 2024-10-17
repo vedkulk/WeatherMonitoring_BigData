@@ -15,7 +15,7 @@ consumer = KafkaConsumer(
 )
 
 # Data storage
-data_storage = {city: {'temps': [], 'hums': [], 'wind_speeds': [], 'times': []} for city in ['London', 'New York', 'Tokyo', 'Sydney', 'Paris']}
+data_storage = {city: {'temps': [], 'hums': [], 'wind_speeds': [], 'times': []} for city in ['London','Bengaluru', 'New York', 'Tokyo', 'Sydney', 'Paris', 'Chennai']}
 
 # Create Dash app
 app = dash.Dash(__name__)
